@@ -1,0 +1,19 @@
+---
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: Updating and upgrading the operating system
+    package:
+      update_cache: true
+      upgrade: true
+      state: latest
+
+  - name: Fixing dpkg errors in ubuntu server
+    command: dpkg --configure -a
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: ubuntu_server
+  become: true
+  roles:
+    - "../../ubuntu_docker"

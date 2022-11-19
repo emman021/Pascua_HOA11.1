@@ -1,0 +1,9 @@
+
+- name: Start docker
+  service:
+    name: "{{ item }}"
+    state: restarted
+    enabled: true
+  with_items:
+    - docker
+    - containerd

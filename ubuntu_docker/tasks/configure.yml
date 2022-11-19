@@ -1,0 +1,45 @@
+
+- name: Creating a directory for Dockerfile
+  file:
+    path: /home/emman/docker_config
+    state: directory
+
+- name: Copying the Dockerfile
+  copy:
+    src: Dockerfile
+    dest: /home/emman/docker_config
+    owner: emman
+    group: emman
+
+- name: Creating volume
+  file:
+    path: /home/emman/pages
+    state: directory
+
+- name: Building image
+  community.docker.docker_image:
+    name: lamp-emman
+    tag: 1.0
+    build:
+      path: /home/emman/docker_config
+    source: build
+
+- name: Deploying container
+  community.docker.docker_container:
+    name: lamp-emman
+    image: lamp-emman:1.0
+    state: started
+    exposed_ports:
+      - "80"
+    ports:
+      - "8080:80"
+    volumes:
+      - /home/emman/pages:/var/www/html
+
+- block:
+  - name: Verify if lamp-emman container is running
+    shell: docker ps
+    register: container_status
+
+  - debug:
+      msg="{{ container_status }}"
